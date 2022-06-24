@@ -9,25 +9,23 @@ function customerSuccessBalancing(
   customers,
   customerSuccessAway
 ) {
-  // const cssSorted =  // ordena do menor valor para o maior
+  const cssSorted = customerSuccess
+    .filter(css => !customerSuccessAway.includes(css.id)) 
+    .sort((a, b) => a.score - b.score) 
 
-  const customerSorted = customers.sort((a, b) => a.score - b.score)// ordena o valor do customer
+  const customerSorted = customers.sort((a, b) => a.score - b.score)
 
-  const mapCssCustomers = customerSuccess
-  .filter(css => !customerSuccessAway.includes(css.id)) // filtra os cs que nao estao ausentes
-  .sort((a, b) => a.score - b.score)
-  .map((css, index) => {
-      const customers = customerSorted.reduce((acc, customer) => {//cada vez que vai iterando vai recebendo 1 customer
-        if (
-        customer.score <= css.score &&
-        (index != 0
-          ? customer.score > cssSorted[index - 1].score //pontos do costumer maior q do css na posicão acima (qdo nao for index 0)
-          : true))
+  const mapCssCustomers = cssSorted.map((css, index) => {
+      const customers = customerSorted.reduce((acc, customer) => {
+        if ((index > 0
+          ? customer.score > cssSorted[index - 1].score 
+          : true) &&
+          customer.score <= css.score )
         {
-        acc += 1 // vai adicionar no acumulador 
+        acc += 1 
         }
-      return acc
-    },0)
+      return acc 
+      },0)
 
     return {
       ...css,
@@ -35,7 +33,7 @@ function customerSuccessBalancing(
     }
   })
 
-  const cssWithMoreCustomers = mapCssCustomers.sort((a, b) => b.customers - a.customers) //ordena os css com customers do maior p/ menor
+  const cssWithMoreCustomers = mapCssCustomers.sort((a, b) => b.customers - a.customers) 
 
    if (
     cssWithMoreCustomers[0].customers === cssWithMoreCustomers[1].customers &&
